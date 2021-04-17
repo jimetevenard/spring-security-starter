@@ -107,9 +107,9 @@ Docs :
 
 Nous allons créer une classe de configuration (cf. exemple dans le [guide](https://spring.io/guides/gs/securing-web/)
 
-#### Exemple de configs minimalistes
+#### Configuration minimaliste
 
-##### Tout ouvrir à tout le monde
+##### Ouvrir toutes les requêtes à tout le monde
 
 Classe de configuration minimaliste pour autoriser toutes les requêtes à tout le monde
 
@@ -136,11 +136,37 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 ##### Utilisation d'un utilisateur fictif
 
-TODO split classe ci dessous
+Première étape, être capable de s'authentifier avec un login/mot de passe.
 
-#### Ciblable  des requêtes
+Nous allons, pour le moment, utiliser un utilisateur fictif, codé en dur.
 
-TODO plit classe ci dessous
+Nous implémentons dans la classe de configuratiopn une méthode - annotée [@bean](https://docs.spring.io/spring-javaconfig/docs/1.0.0.M4/reference/html/ch02s02.html) - pour retourner un [UserDetailsService](https://www.codeflow.site/fr/article/spring-security-authentication-with-a-database).
+
+
+
+````
+	@Bean
+	@Override
+	public UserDetailsService userDetailsService() {
+		UserDetails user =
+			 User.withDefaultPasswordEncoder()
+				.username("jim")
+				.password("jim")
+				.roles("USER")
+				.build();
+
+		return new InMemoryUserDetailsManager(user);
+
+````
+
+##### Filtrage des requêtes
+
+Nous allons maintenant filtrer les requêtes de sorte que :
+
+- Les requêtes vers `hello` soient libres d'accès
+- Les requêtes vers toutes les autres URLs soient authentifiées.
+- Nous utilisons la méthode [formLogin()](https://docs.spring.io/spring-security/site/docs/5.4.6/api/org/springframework/security/config/annotation/web/builders/HttpSecurity.html#formLogin--) pour utiliser le mécanisme d'authentication par formulaire de Spring.
+
 
 ````
 package com.jimetevenard.jimnotesback;
