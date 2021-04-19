@@ -1,22 +1,25 @@
 Spring Boot - projet demo Notes
 
-https://start.spring.io/
+# Création et sécurisation d'un Service REST avec Spring Boot
+
+Nous allons créer une application minimaliste avec Spring Boot.
+
+Cette application exposera deux points d'API en REST :
+
+* Resource `/hello` : retourne une chaine de caractère de bienvenue.  
+  Cette resource doit être accessible à tous, sans identification
+* Resource `/liste` : Liste fictive de données (ici, un simple *array* de String)
+  Cette resource ne doit être accessible qu'aux utilisateurs identifiés.
+
+Nous utilisons le Starter Spring Boot <https://start.spring.io/> pour initialiser notre projet.
 
 ## Dependencies
 
-Dépendences à embarquer
+Dépendences à selection dans le [Starter Spring Boot](https://start.spring.io/)
 
-### Spring Web 
-
-Build web, including RESTful, applications using Spring MVC. Uses Apache Tomcat as the default embedded container.
-
-### Spring Security 
-
-Highly customizable authentication and access-control framework for Spring applications.
-
-### MySQL Driver (Utile plus tard)
-
-MySQL JDBC and R2DBC driver.
+* **Spring Web** : Build web, including RESTful, applications using Spring MVC. Uses Apache Tomcat as the default embedded container.
+* **Spring Security** : Highly customizable authentication and access-control framework for Spring applications.
+* **MySQL Driver** (Utile plus tard) : MySQL JDBC and R2DBC driver.
 
 ## Lets go !
 
@@ -87,6 +90,8 @@ public class ListeController {
 }
 ````
 
+**Note** : Spring se charge à notre place de la conversion de l'objet retourné vers le format *JSON*.
+
 ## Gestion de la sécurité / authentification
 
 Spring Security est en dépendance (Maven) de notre application.
@@ -127,7 +132,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		// Nous authorisons l'accès libre à toutes les requêtes
+		// Nous autorisons  l'accès libre à toutes les requêtes
 		http.authorizeRequests().anyRequest().permitAll();
 
 	}
@@ -167,23 +172,9 @@ Nous allons maintenant filtrer les requêtes de sorte que :
 - Les requêtes vers toutes les autres URLs soient authentifiées.
 - Nous utilisons la méthode [formLogin()](https://docs.spring.io/spring-security/site/docs/5.4.6/api/org/springframework/security/config/annotation/web/builders/HttpSecurity.html#formLogin--) pour utiliser le mécanisme d'authentication par formulaire de Spring.
 
+Améliorons notre méthode `configure()` : 
 
 ````
-package com.jimetevenard.jimnotesback;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-
-@Configuration
-@EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		
@@ -200,17 +191,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				
 	}
 
-	@Bean
-	@Override
-	public UserDetailsService userDetailsService() {
-		UserDetails user =
-			 User.withDefaultPasswordEncoder()
-				.username("jim")
-				.password("jim")
-				.roles("USER")
-				.build();
+````
 
-		return new InMemoryUserDetailsManager(user);
-	}
-}
-````"# spring-security-starter" 
